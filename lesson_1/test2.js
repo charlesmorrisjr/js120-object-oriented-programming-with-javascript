@@ -111,9 +111,6 @@ function createComputer() {
     },
 
     calcChoiceWeight() {
-      // This function checks if the computer lost with the same hand more than once.
-      // If so, it remove weight from that choice and adds weight to all the other choices
-
       const NUM_REPEATS = 1;
 
       for (let idx = 0; idx < VALID_CHOICES.length; idx++) {
