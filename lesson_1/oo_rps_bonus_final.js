@@ -111,8 +111,10 @@ function createComputer() {
     },
 
     calcChoiceWeight() {
+      const NUM_REPEATS = 1;
+
       for (let idx = 0; idx < VALID_CHOICES.length; idx++) {
-        if (this.lostHands.filter(hand => VALID_CHOICES[idx] === hand).length > 1) {
+        if (this.lostHands.filter(hand => VALID_CHOICES[idx] === hand).length > NUM_REPEATS) {
           if (this.choiceWeight[idx] - COMPUTER_CHOICE_SUB_WEIGHT > COMPUTER_MIN_CHANCE) {
             this.choiceWeight[idx] -= COMPUTER_CHOICE_SUB_WEIGHT;
           } else {
