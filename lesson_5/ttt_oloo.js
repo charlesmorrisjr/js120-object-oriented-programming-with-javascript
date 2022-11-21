@@ -191,8 +191,8 @@ let TTTGame = {
     let choice;
 
     do {
-      choice = Math.floor((9 * Math.random()) + 1);
-    } while (validChoices.includes(choice));
+      choice = Math.floor((9 * Math.random()) + 1).toString();
+    } while (!validChoices.includes(choice));
 
     this.board.markSquareAt(choice, this.computer.getMarker());
   },
