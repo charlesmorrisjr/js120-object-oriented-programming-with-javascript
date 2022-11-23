@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-statements */
 const readline = require('readline-sync');
@@ -24,16 +25,6 @@ class Card {
       name = ' of Diamonds';
     }
     return name;
-  }
-
-  getValue() {
-    if (['J', 'Q', 'K'].includes(this.value)) {
-      return 10;
-    } else if (this.value === 'A') {
-      return 11;
-    } else {
-      return Number(this.value);
-    }
   }
 }
 
@@ -64,15 +55,11 @@ class Deck {
   }
 }
 
-class Participant {
-  constructor() {
-    this.initializeHand();
-  }
-
+let Hand = {
   initializeHand() {
     this.hand = [];
     this.score = 0;
-  }
+  },
 
   displayHand(hideSecondCard) {
     this.hand.forEach((card, idx) => {
@@ -82,54 +69,14 @@ class Participant {
         console.log(`  ${card.value}${card.getSuit()}`);
       }
     });
-  }
+  },
+};
 
-  totalValue() {
-    let values = this.hand.map(card => card.value);
-
-    let sum = 0;
-/*
-
-    values.forEach(value => {
-      if (['J', 'Q', 'K'].includes(value)) {
-        sum += 10;
-      } else if (value === 'A') {
-        sum += 11;
-      } else {
-        sum += Number(value);
-      }
-    });
-*/
-    this.hand.forEach(card => {
-      sum += card.getValue();
-    });
-    // Correct for aces
-    values.filter(value => value === 'A').forEach(_ => {
-      if (sum > this.MAX_HAND_VALUE) sum -= 10;
-    });
-
-    return sum;
-  }
-}
-
-class Player extends Participant {
+class Player {
   constructor() {
-    super();
+    this.initializeHand();
 
     this.money = 5;
-  }
-
-  static MAX_HAND_VALUE = 21;
-
-  hit() {
-  }
-
-  stay() {
-    //STUB
-  }
-
-  isBusted() {
-    return this.totalValue() > Player.MAX_HAND_VALUE;
   }
 
   displayMoney() {
@@ -146,33 +93,14 @@ class Player extends Participant {
   }
 }
 
-class Dealer extends Participant {
-  // Very similar to a Player; do we need this?
-
+class Dealer {
   constructor() {
-    super();
-  }
-
-  hit() {
-    //STUB
-  }
-
-  stay() {
-    //STUB
-  }
-
-  isBusted() {
-    return this.totalValue() > Player.MAX_HAND_VALUE;
-  }
-
-  hide() {
-    //STUB
-  }
-
-  reveal() {
-    //STUB
+    this.initializeHand();
   }
 }
+
+Object.assign(Player.prototype, Hand);
+Object.assign(Dealer.prototype, Hand);
 
 class TwentyOneGame {
   constructor() {
@@ -181,24 +109,14 @@ class TwentyOneGame {
     this.dealer = new Dealer();
   }
 
+  static MAX_HAND_VALUE = 21;
   static DEALER_MAX = 17;
-  static MAX_POINTS = 5;
 
   start() {
     this.displayWelcomeMessage();
 
     do {
-      this.deck.initialize();
-      this.player.initializeHand();
-      this.dealer.initializeHand();
-      this.dealCards();
-      this.showCards(true);
-      this.player.displayMoney();
-      this.playerTurn();
-
-      if (!this.player.isBusted()) {
-        this.dealerTurn();
-      }
+      this.playOneGame();
 
       console.clear();
       this.showCards(false);
@@ -219,9 +137,29 @@ class TwentyOneGame {
     this.displayGoodbyeMessage();
   }
 
+  playOneGame() {
+    this.deck.initialize();
+    this.player.initializeHand();
+    this.dealer.initializeHand();
+    this.dealCards();
+    this.showCards(true);
+    this.player.displayMoney();
+    this.playerTurn();
+
+    if (!this.isBusted(this.player)) {
+      this.dealerTurn();
+    }
+  }
+
+  hit(player) {
+    player.hand.push(this.deck.deal());
+  }
+
   dealCards() {
-    this.player.hand.push(...[this.deck.deal(), this.deck.deal()]);
-    this.dealer.hand.push(...[this.deck.deal(), this.deck.deal()]);
+    this.hit(this.player);
+    this.hit(this.player);
+    this.hit(this.dealer);
+    this.hit(this.dealer);
   }
 
   showCards(hideDealerCards) {
@@ -231,16 +169,16 @@ class TwentyOneGame {
     this.dealer.displayHand(hideDealerCards);
     console.log('');
     if (!hideDealerCards) {
-      console.log(`  Score: ${this.dealer.totalValue()}`);
+      console.log(`  Score: ${this.totalValue(this.dealer)}`);
     } else {
-      console.log(`  Score: ${this.dealer.hand[0].getValue()}`);
+      console.log(`  Score: ${this.getValue(this.dealer.hand[0])}`);
     }
     console.log('');
     console.log(`Player's Cards:`);
     console.log('');
     this.player.displayHand(false);
     console.log('');
-    console.log(`  Score: ${this.player.totalValue()}`);
+    console.log(`  Score: ${this.totalValue(this.player)}`);
     console.log('');
   }
 
@@ -252,7 +190,7 @@ class TwentyOneGame {
         let input = readline.question().toLowerCase();
 
         if (input === 'hit' || input === 'h') {
-          this.player.hand.push(this.deck.deal());
+          this.hit(this.player);
           break;
         } else if (input === 'stay' || input === 's') {
           return;
@@ -262,13 +200,13 @@ class TwentyOneGame {
       }
       console.clear();
       this.showCards(true);
-    } while (!this.player.isBusted());
+    } while (!this.isBusted(this.player));
   }
 
   dealerTurn() {
     do {
-      if (this.dealer.totalValue() < TwentyOneGame.DEALER_MAX) {
-        this.dealer.hand.push(this.deck.deal());
+      if (this.totalValue(this.dealer) < TwentyOneGame.DEALER_MAX) {
+        this.hit(this.dealer);
       } else {
         break;
       }
@@ -276,9 +214,36 @@ class TwentyOneGame {
       this.showCards(false);
 
       readline.question('Press Return to continue....');
-    } while (!this.dealer.isBusted());
+    } while (!this.isBusted(this.dealer));
 
     console.clear();
+  }
+
+  getValue(card) {
+    if (['J', 'Q', 'K'].includes(card.value)) {
+      return 10;
+    } else if (card.value === 'A') {
+      return 11;
+    } else {
+      return Number(card.value);
+    }
+  }
+
+  totalValue(player) {
+    let sum = player.hand.map(card => this.getValue(card))
+      .reduce((total, val) => total + val);
+
+    let values = player.hand.map(card => card.value);
+
+    values.filter(value => value === 'A').forEach(_ => {
+      if (sum > TwentyOneGame.MAX_HAND_VALUE) sum -= 10;
+    });
+
+    return sum;
+  }
+
+  isBusted(player) {
+    return this.totalValue(player) > TwentyOneGame.MAX_HAND_VALUE;
   }
 
   playAgain() {
@@ -310,19 +275,19 @@ class TwentyOneGame {
   }
 
   displayResult() {
-    if (this.player.isBusted()) {
+    if (this.isBusted(this.player)) {
       console.log('You busted! The dealer wins.');
       this.player.money -= 1;
-    } else if (this.dealer.isBusted()) {
+    } else if (this.isBusted(this.dealer)) {
       console.log('Dealer busted! You win!');
       this.player.money += 1;
-    } else if (this.player.totalValue() > this.dealer.totalValue()) {
+    } else if (this.totalValue(this.player) > this.totalValue(this.dealer)) {
       console.log('You win!');
       this.player.money += 1;
-    } else if (this.player.totalValue() < this.dealer.totalValue()) {
+    } else if (this.totalValue(this.player) < this.totalValue(this.dealer)) {
       console.log('You lose!');
       this.player.money -= 1;
-    } else if (this.player.totalValue() === this.dealer.totalValue()) {
+    } else if (this.totalValue(this.player) === this.totalValue(this.dealer)) {
       console.log("It's a tie!");
     }
   }
