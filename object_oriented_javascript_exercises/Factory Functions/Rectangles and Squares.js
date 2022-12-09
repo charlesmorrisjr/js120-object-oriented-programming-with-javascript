@@ -21,11 +21,11 @@ function createSquare(size) {
   return createRectangle(size, size);
 }
 
-let rect = new createRectangle(4, 5);
+let rect = createRectangle(4, 5);
 
 console.log(rect.getWidth()); // 4
 console.log(rect.getLength()); // 5
 console.log(rect.getArea()); // 20
 
-let square = new createSquare(5);
+let square = createSquare(5);
 console.log(`area of square = ${square.getArea()}`); // area of square = 25

@@ -16,8 +16,7 @@ Rectangle.prototype.getArea = function() {
 };
 
 function Square(size) {
-  this.length = size;
-  this.width = size;
+  Rectangle.call(this, size, size);
 }
 
 Square.prototype = Object.create(Rectangle.prototype);
