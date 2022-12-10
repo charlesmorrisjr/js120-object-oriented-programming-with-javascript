@@ -20,6 +20,7 @@ function Square(size) {
 }
 
 Square.prototype = Object.create(Rectangle.prototype);
+Square.prototype.constructor = Square;
 
 let rect = new Rectangle(4, 5);
 
@@ -28,4 +29,6 @@ console.log(rect.getLength()); // 5
 console.log(rect.getArea()); // 20
 
 let square = new Square(5);
-console.log(`area of square = ${square.getArea()}`); // area of square = 25
+console.log(`area of square = ${square.getArea()}`); // area of square = 
+console.log(Object.getPrototypeOf(Rectangle.prototype))
+console.log(Object.getPrototypeOf({}));

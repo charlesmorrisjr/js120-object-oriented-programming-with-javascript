@@ -1,11 +1,11 @@
 /* eslint-disable max-lines-per-function */
-function createGreeter(name) {
-  return {
-    name: name,
-    morning: 'Good Morning',
-    afternoon: 'Good Afternoon',
-    evening: 'Good Evening',
-    greet: function(timeOfDay) {
+class Greeter {
+  constructor(name) {
+    this.name = name;
+    this.morning = 'Good Morning';
+    this.afternoon = 'Good Afternoon';
+    this.evening = 'Good Evening';
+    this.greet = function(timeOfDay) {
       let msg = '';
       switch (timeOfDay) {
         case 'morning':
@@ -20,11 +20,11 @@ function createGreeter(name) {
       }
 
       console.log(msg);
-    },
-  };
+    };
+  }
 }
 
-let helloVictor = createGreeter('Victor');
+let helloVictor = new Greeter('Victor');
 helloVictor.greet('morning');
 
 // Good Morning Victor
