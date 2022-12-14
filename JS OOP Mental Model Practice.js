@@ -30,10 +30,14 @@ function func() {}
 // console.log(Function.hasOwnProperty('constructor'));  // false
 
 // However, the objects referenced by the constructor functions' 'prototype'
-// properties do have their "own" 'constructor' propertues
+// properties do have their "own" 'constructor' properties
 // console.log(Array.prototype.hasOwnProperty('constructor'));     // true
 // console.log(Object.prototype.hasOwnProperty('constructor'));    // true
 // console.log(Function.prototype.hasOwnProperty('constructor'));  // true
+
+// console.log(Array.prototype.constructor === Array);             // true
+// console.log(Object.prototype.constructor === Object);           // true
+// console.log(Function.prototype.constructor === Function);       // true
 
 // console.log(Object.getPrototypeOf(Array) === Function.prototype);     // true
 // console.log(Object.getPrototypeOf(Object) === Function.prototype);    // true
